@@ -9,6 +9,5 @@ group :development do
   gem "sqlite3"
   gem "rack-test"
   gem "rake"
-  gem "ruby-debug",   :platforms => :ruby_18
-  gem "ruby-debug19", :platforms => :ruby_19
+  gem "ruby-debug"
 end
