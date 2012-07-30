@@ -56,7 +56,6 @@ module Oink
           })
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
-            puts "Message #{message} sent to cube"
           end
         end
       end
@@ -67,6 +66,19 @@ module Oink
         sorted_list = Oink::HashUtils.to_sorted_array(ActiveRecord::Base.instantiated_hash)
         sorted_list.unshift("Total: #{ActiveRecord::Base.total_objects_instantiated}")
         @logger.info("Instantiation Breakdown: #{sorted_list.join(' | ')}")
+        if @cube != nil
+          message = JSON.dump(
+          {
+            :type => 'kraken-rails-objects',
+            :time => Time.now,
+            :data => {
+              :objects_instantiated => "#{ActiveRecord::Base.total_objects_instantiated}"
+            }
+          })
+          Thread.start do
+            @sock.send message, 0, @cube[:address], @cube[:port]
+          end
+        end
         reset_objects_instantiated
       end
     end
