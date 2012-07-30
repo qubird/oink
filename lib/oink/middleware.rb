@@ -56,7 +56,7 @@ module Oink
           })
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
-            puts "Message #{message} sent to #{@cube.address}:#{@cube.port}"
+            puts "Message #{message} sent to cube"
           end
         end
       end
@@ -78,7 +78,7 @@ module Oink
           })
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
-            puts "Message #{message} sent to #{@cube.address}:#{@cube.port}"
+            puts "Message #{message} sent to cube"
           end
         end
         reset_objects_instantiated
