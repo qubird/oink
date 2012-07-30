@@ -51,11 +51,12 @@ module Oink
             :type => 'kraken-rails-memory',
             :time => Time.now,
             :data => {
-              :memory => memory
+              :memory_usage => memory
             }
           })
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
+            puts "Message #{message} sent to #{@cube.address}:#{@cube.port}"
           end
         end
       end
@@ -77,6 +78,7 @@ module Oink
           })
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
+            puts "Message #{message} sent to #{@cube.address}:#{@cube.port}"
           end
         end
         reset_objects_instantiated
