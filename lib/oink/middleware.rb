@@ -1,6 +1,7 @@
 require 'hodel_3000_compliant_logger'
 require 'oink/utils/hash_utils'
 require 'oink/instrumentation'
+require 'socket'
 
 module Oink
   class Middleware
@@ -9,16 +10,21 @@ module Oink
       @app         = app
       @logger      = options[:logger] || Hodel3000CompliantLogger.new("log/oink.log")
       @instruments = options[:instruments] ? Array(options[:instruments]) : [:memory, :activerecord]
+      if ENV['RAILS_ENV'] == 'production'
+        @cube = options[:cube] || nil
+      else
+        @cube = nil
+      end
+      @sock  = UDPSocket.new
 
       ActiveRecord::Base.send(:include, Oink::Instrumentation::ActiveRecord) if @instruments.include?(:activerecord)
     end
 
     def call(env)
       status, headers, body = @app.call(env)
-
       log_routing(env)
-      log_memory
-      log_activerecord
+      log_memory()
+      log_activerecord()
       log_completed
       [status, headers, body]
     end
@@ -40,6 +46,17 @@ module Oink
       if @instruments.include?(:memory)
         memory = Oink::Instrumentation::MemorySnapshot.memory
         @logger.info("Memory usage: #{memory} | PID: #{$$}")
+        if @cube != nil
+          message = JSON.dump(
+          {
+            :type => 'kraken-rails-memory',
+            :time => Time.now,
+            :data => {
+              :memory => memory
+            }
+          })
+          @sock.send message, 0, @cube[:address], @cube[:port]
+        end
       end
     end
 
