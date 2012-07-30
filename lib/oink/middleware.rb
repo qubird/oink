@@ -16,7 +16,6 @@ module Oink
         @cube = nil
       end
       @sock  = UDPSocket.new
-
       ActiveRecord::Base.send(:include, Oink::Instrumentation::ActiveRecord) if @instruments.include?(:activerecord)
     end
 
