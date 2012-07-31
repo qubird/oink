@@ -69,7 +69,7 @@ module Oink
         @logger.info("Instantiation Breakdown: #{sorted_list.join(' | ')}")
         if @cube != nil
           now = Time.now().utc()
-          message = {"type" => "kraken_rails_memory",
+          message = {"type" => "kraken_rails_objects",
                      "time" => "#{now}",
                      "data" => {"objects_instantiated" => "#{ActiveRecord::Base.total_objects_instantiated}",
                                 "env" => "#{ENV['RAILS_ENV']}"}}
