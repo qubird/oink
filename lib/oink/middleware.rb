@@ -1,7 +1,11 @@
 require 'hodel_3000_compliant_logger'
 require 'oink/utils/hash_utils'
 require 'oink/instrumentation'
+
+require 'time'
+require 'json'
 require 'socket'
+
 
 module Oink
   class Middleware
@@ -10,12 +14,10 @@ module Oink
       @app         = app
       @logger      = options[:logger] || Hodel3000CompliantLogger.new("log/oink.log")
       @instruments = options[:instruments] ? Array(options[:instruments]) : [:memory, :activerecord]
-      if ENV['RAILS_ENV'] == 'production'
-        @cube = options[:cube] || nil
-      else
-        @cube = nil
-      end
+
+      @cube = options[:cube] || nil
       @sock  = UDPSocket.new
+
       ActiveRecord::Base.send(:include, Oink::Instrumentation::ActiveRecord) if @instruments.include?(:activerecord)
     end
 
@@ -46,14 +48,11 @@ module Oink
         memory = Oink::Instrumentation::MemorySnapshot.memory
         @logger.info("Memory usage: #{memory} | PID: #{$$}")
         if @cube != nil
-          message = JSON.dump(
-          {
-            :type => 'kraken-rails-memory',
-            :time => Time.now,
-            :data => {
-              :memory_usage => memory
-            }
-          })
+          now = Time.now().utc()
+          message = {"type" => "kraken_rails_memory",
+                     "time" => "#{now}",
+                     "data" => {"memory_usage" => "#{memory}"}}
+          message = JSON.dump(message)
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
             puts "Message #{message} sent to cube"
@@ -68,14 +67,11 @@ module Oink
         sorted_list.unshift("Total: #{ActiveRecord::Base.total_objects_instantiated}")
         @logger.info("Instantiation Breakdown: #{sorted_list.join(' | ')}")
         if @cube != nil
-          message = JSON.dump(
-          {
-            :type => 'kraken-rails-objects',
-            :time => Time.now,
-            :data => {
-              :objects_instantiated => "#{ActiveRecord::Base.total_objects_instantiated}"
-            }
-          })
+          now = Time.now().utc()
+          message = {"type" => "kraken_rails_memory",
+                     "time" => "#{now}",
+                     "data" => {"objects_instantiated" => "#{ActiveRecord::Base.total_objects_instantiated}"}}
+          message = JSON.dump(message)
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
             puts "Message #{message} sent to cube"
