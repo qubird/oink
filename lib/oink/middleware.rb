@@ -51,7 +51,8 @@ module Oink
           now = Time.now().utc()
           message = {"type" => "kraken_rails_memory",
                      "time" => "#{now}",
-                     "data" => {"memory_usage" => "#{memory}"}}
+                     "data" => {"memory_usage" => "#{memory}",
+                                "env" => "#{ENV['RAILS_ENV']}"}}
           message = JSON.dump(message)
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
@@ -70,7 +71,8 @@ module Oink
           now = Time.now().utc()
           message = {"type" => "kraken_rails_memory",
                      "time" => "#{now}",
-                     "data" => {"objects_instantiated" => "#{ActiveRecord::Base.total_objects_instantiated}"}}
+                     "data" => {"objects_instantiated" => "#{ActiveRecord::Base.total_objects_instantiated}",
+                                "env" => "#{ENV['RAILS_ENV']}"}}
           message = JSON.dump(message)
           Thread.start do
             @sock.send message, 0, @cube[:address], @cube[:port]
