@@ -49,7 +49,7 @@ module Oink
         @logger.info("Memory usage: #{memory} | PID: #{$$}")
         if @cube != nil
           now = Time.now().utc()
-          message = {"type" => "kraken_rails_memory",
+          message = {"type" => "#{@cube[:type]}_memory",
                      "time" => "#{now}",
                      "data" => {"memory_usage" => "#{memory}",
                                 "env" => "#{ENV['RAILS_ENV']}"}}
@@ -69,7 +69,7 @@ module Oink
         @logger.info("Instantiation Breakdown: #{sorted_list.join(' | ')}")
         if @cube != nil
           now = Time.now().utc()
-          message = {"type" => "kraken_rails_objects",
+          message = {"type" => "#{@cube[:type]}_objects",
                      "time" => "#{now}",
                      "data" => {"objects_instantiated" => "#{ActiveRecord::Base.total_objects_instantiated}",
                                 "env" => "#{ENV['RAILS_ENV']}"}}

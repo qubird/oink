@@ -28,7 +28,7 @@ describe Oink::Middleware do
   let(:app)         { Oink::Middleware.new(
                         SampleApplication.new,
                         :logger => logger,
-                        :cube => {:address => 'localhost', :port => 9000 }) }
+                        :cube => {:address => 'localhost', :port => 9000, :type => 'cool' }) }
 
   before do
     Oink::Instrumentation::MemorySnapshot.stub(:memory => 4092)
