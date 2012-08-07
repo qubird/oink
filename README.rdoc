@@ -52,6 +52,15 @@ You can also initialize it with an optional logger instance enabling your applic
 
 (This setup enables Oink to work with Request Log Analyzer (https://github.com/wvanbergen/request-log-analyzer), which currently parses rails logs)
 
+To send stats to cube.js, use:
+
+  YourApplication::Application.middleware.use Oink::Middleware(
+      :cube => {:address => "#{your_cubejs_udp_listening_server}",
+                :port => "#{your_cubejs_udp_listening_port}",
+                :type => "#{prefix_for_your_messages}"})
+
+Messages will be sent to cube with memory and objects counts, respectively as <your_prefix>_rails_memory and <your_prefix>_rails_objects
+
 Oink::Middleware logs memory and activerecord usage by default.
 
 You can configure which using the :instruments option. For memory only:
