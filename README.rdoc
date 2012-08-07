@@ -59,7 +59,10 @@ To send stats to cube.js, use:
                 :port => "#{your_cubejs_udp_listening_port}",
                 :type => "#{prefix_for_your_messages}"})
 
-Messages will be sent to cube with memory and objects counts, respectively as <your_prefix>_rails_memory and <your_prefix>_rails_objects
+Messages will be sent to cube with memory and objects counts, respectively as <your_prefix>_rails_memory and <your_prefix>_rails_objects.
+The format of messages sent to cube is like:
+  {"type":"#{prefix}_rails_memory","time":"2012-08-07 15:25:49 UTC","data":{"memory_usage":"2539200","env":"#{ENV['RAILS_ENV']}"}}
+  {"type":"#{prefix}_rails_objects","time":"2012-08-07 15:25:49 UTC","data":{"objects_instantiated":"10","env":"#{ENV['RAILS_ENV']}"}}
 
 Oink::Middleware logs memory and activerecord usage by default.
 
